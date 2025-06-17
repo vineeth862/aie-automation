@@ -6,6 +6,7 @@ import fitz
 import base64
 import io
 from langchain_core.messages import HumanMessage
+import streamlit as st
 class IsometricDataResponse(TypedDict):
     line_number: list = Field(description="Drawing line number, which appears after the keyword 'Title:'")
 
