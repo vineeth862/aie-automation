@@ -73,8 +73,8 @@ def execute_markup(input_file,
     script_dir = Path(__file__).parent
     # featureExtractorModelPath = str(script_dir / "models" / "feature_identication_trained_model" / "weights" / "best.pt")
     # textExtractorModelPath = str(script_dir / "models" / "text_identication_trained_model" / "weights" / "best.pt")
-    featureExtractorModelPath=r"models/best.pt"
-    textExtractorModelPath=r"models/best2.pt"
+    featureExtractorModelPath="best.pt"
+    textExtractorModelPath="best2.pt"
     # C:\Users\Vineeth\AIE Dropbox\Vineeth S\Code\DataScience\rumailaOperatingOrganization\anomalyMarkupAutomation\finalDelivery\feature_identication_trained_model\weights\best.pt
     # Ask input from engineers for all the parameters listed below
     anomalyDetectionObj = AnomalyDetection(input_file = input_file,
