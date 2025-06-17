@@ -21,7 +21,7 @@ import re
 from scipy.ndimage import rotate
 from tqdm import tqdm
 from langchain_anthropic import ChatAnthropic
-
+import zipfile
 import streamlit as st
 
 ## Streamlit configuration
@@ -125,7 +125,7 @@ def execute_markup(input_file,
         return anomalyResult
 
     filtered_anomaly_data = anomalyResult['filter_feature_result']
-    filtered_anomaly_data.to_excel(f"{output_path}/AnomalyData.xlsx",index=False)
+    # filtered_anomaly_data.to_excel(f"{output_path}/AnomalyData.xlsx",index=False)
     st.success("✅ Anomaly detection completed!")
 
     # Extract Line Numbers
@@ -151,7 +151,7 @@ def execute_markup(input_file,
         st.error(f"Feature detection failed: {featureTextOnEachPage.get('status', 'Unknown error')}")
         return featureTextOnEachPage
     featureTextOnEachPage = featureTextOnEachPage['final_df']
-    featureTextOnEachPage.to_excel(f"{output_path}/FeatureData.xlsx",index=False)
+    # featureTextOnEachPage.to_excel(f"{output_path}/FeatureData.xlsx",index=False)
     st.success("✅ Feature and text detection completed!")
 
     # Annotation/Markup
@@ -159,7 +159,7 @@ def execute_markup(input_file,
     annotator = PDFAnnotator(pdf_path, filtered_anomaly_data,featureTextOnEachPage,lineNumberColumn=line_number_column)
     merged_data = annotator.mergeAnomalyDataAndFeatureLocation()
     merged_data['isAnoted'] = merged_data['text'].apply(lambda x: False if pd.isna(x) else True)
-    merged_data.to_excel(f"{output_path}/AnotationData.xlsx",index=False)
+    # merged_data.to_excel(f"{output_path}/AnotationData.xlsx",index=False)
 
     # Annotate each line number
     progress_bar = st.progress(0)
@@ -168,14 +168,57 @@ def execute_markup(input_file,
         annotator.annotate_feature(lineNumber,line_number_column,anomaly_column)
         progress_bar.progress((i + 1) / len(unique_lines))
     
-    annotator.save_pdf(f'{output_path}/AnomalyMarked.pdf')
+    # annotator.save_pdf(f'{output_path}/AnomalyMarked.pdf')
     st.success("✅ PDF annotation completed!")
     
     end_time = time.time()
     execution_time = end_time - start_time
-    
+    def create_zip_download(filtered_anomaly_data, featureTextOnEachPage, merged_data, pdf_bytes):
+        """Create a ZIP file containing all 4 files"""
+        
+        zip_buffer = io.BytesIO()
+        
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            
+            # Convert DataFrames to Excel bytes and add to ZIP
+            excel_files = [
+                (filtered_anomaly_data, "AnomalyData.xlsx"),
+                (featureTextOnEachPage, "FeatureData.xlsx"),
+                (merged_data, "AnnotationData.xlsx")
+            ]
+            
+            for df, filename in excel_files:
+                excel_buffer = io.BytesIO()
+                df.to_excel(excel_buffer, index=False)
+                zip_file.writestr(filename, excel_buffer.getvalue())
+            
+            # Add PDF to ZIP
+            zip_file.writestr("AnomalyMarked.pdf", pdf_bytes)
+        
+        return zip_buffer.getvalue()
     st.success(f"🎉 All processing completed in {execution_time:.2f} seconds!")
+    zip_data = create_zip_download(
+        filtered_anomaly_data=filtered_anomaly_data,
+        featureTextOnEachPage=featureTextOnEachPage, 
+        merged_data=merged_data,
+        pdf_bytes=annotator
+    )
     
+    # Single download button in center
+    st.markdown("<br>", unsafe_allow_html=True)  # Add some space
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.download_button(
+            label="📦 Download All Results (ZIP)",
+            data=zip_data,
+            file_name="anomaly_analysis_results.zip",
+            mime="application/zip",
+            help="Downloads all 4 files: AnomalyData.xlsx, FeatureData.xlsx, AnnotationData.xlsx, AnomalyMarked.pdf"
+        )
+    
+    # Optional: Show what's included
+    st.info("📁 ZIP contains: AnomalyData.xlsx • FeatureData.xlsx • AnnotationData.xlsx • AnomalyMarked.pdf")
     return {
         'return_code': 1,
         'status': 'Success', 
