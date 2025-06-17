@@ -65,11 +65,14 @@ def execute_markup(input_file,
     start_time = time.time()
     
     os.makedirs(output_path, exist_ok=True)
-    featureExtractorModelPath=r"models/feature_identication_trained_model/weights/best.pt"
-    textExtractorModelPath=r"models/text_identication_trained_model/weights/best.pt"
-   
-    # featureExtractorModelPath = os.path.join(current_dir, "feature_identication_trained_model", "weights", "best.pt")
-    # textExtractorModelPath = os.path.join(current_dir, "text_identification_trained_model", "weights", "best.pt")
+    # featureExtractorModelPath=r"models/feature_identication_trained_model/weights/best.pt"
+    # textExtractorModelPath=r"models/text_identication_trained_model/weights/best.pt"
+    from pathlib import Path
+
+    # Get absolute paths relative to your script location
+    script_dir = Path(__file__).parent
+    featureExtractorModelPath = str(script_dir / "models" / "feature_identication_trained_model" / "weights" / "best.pt")
+    textExtractorModelPath = str(script_dir / "models" / "text_identication_trained_model" / "weights" / "best.pt")
 
     # C:\Users\Vineeth\AIE Dropbox\Vineeth S\Code\DataScience\rumailaOperatingOrganization\anomalyMarkupAutomation\finalDelivery\feature_identication_trained_model\weights\best.pt
     # Ask input from engineers for all the parameters listed below
