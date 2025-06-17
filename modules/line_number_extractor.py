@@ -17,6 +17,7 @@ class PDFLineExtractor:
         self.base_model = ChatAnthropic(
                     model="claude-3-7-sonnet-20250219",
                     temperature=0,
+                    api_key=st.secrets["CLAUDE_API_KEY"],
                     max_tokens=64000
                 )
         self.claude_llm_with_structured_output = self.base_model.with_structured_output(IsometricDataResponse)
