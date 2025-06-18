@@ -80,10 +80,10 @@ def execute_markup(input_file,
     start_time = time.time()
     
     # Create output directory
-    os.makedirs(output_path, exist_ok=True)
+    # os.makedirs(output_path, exist_ok=True)
     
     # Load models safely
-    st.info("🔄 Loading AI models...")
+    # st.info("🔄 Loading AI models...")
     
     # Load feature extractor model
     feature_model = load_yolo_model_safely("best.pt", "Feature Extractor Model")
@@ -107,10 +107,10 @@ def execute_markup(input_file,
     featureExtractorModelPath = str(script_dir / "best.pt")
     textExtractorModelPath = str(script_dir / "best2.pt")
     
-    st.success("✅ All models loaded successfully!")
+    # st.success("✅ All models loaded successfully!")
     
     # Process anomaly detection
-    st.info("🔄 Processing anomaly detection...")
+    # st.info("🔄 Processing anomaly detection...")
     anomalyDetectionObj = AnomalyDetection(input_file = input_file,
                                         anomaly_threshold=anomaly_threshold,
                                         line_number_column=line_number_column,
@@ -126,10 +126,10 @@ def execute_markup(input_file,
 
     filtered_anomaly_data = anomalyResult['filter_feature_result']
     # filtered_anomaly_data.to_excel(f"{output_path}/AnomalyData.xlsx",index=False)
-    st.success("✅ Anomaly detection completed!")
+    # st.success("✅ Anomaly detection completed!")
 
     # Extract Line Numbers
-    st.info("🔄 Extracting line numbers from PDF...")
+    # st.info("🔄 Extracting line numbers from PDF...")
     extractor = PDFLineExtractor(pdf_path,batch_size=5)
     lineNumberOnEachPage = extractor.extract_line_numbers()
     if lineNumberOnEachPage['return_code'] == 1:
@@ -142,7 +142,7 @@ def execute_markup(input_file,
     uniqueLineNumbers = list(filtered_anomaly_data[line_number_column].unique())
     
     # Extract Feature and Process
-    st.info("🔄 Processing feature and text detection...")
+    # st.info("🔄 Processing feature and text detection...")
     featureTextDetector = FeatureTextDetection(pdf_path=pdf_path,
                                              featureExtractorModelPath=featureExtractorModelPath,
                                              textExtractorModelPath=textExtractorModelPath)
@@ -152,7 +152,7 @@ def execute_markup(input_file,
         return featureTextOnEachPage
     featureTextOnEachPage = featureTextOnEachPage['final_df']
     # featureTextOnEachPage.to_excel(f"{output_path}/FeatureData.xlsx",index=False)
-    st.success("✅ Feature and text detection completed!")
+    # st.success("✅ Feature and text detection completed!")
 
     # Annotation/Markup
     st.info("🔄 Creating PDF annotations...")
