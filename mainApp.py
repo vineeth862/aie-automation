@@ -173,13 +173,11 @@ def execute_markup(input_file,
     
     end_time = time.time()
     execution_time = end_time - start_time
-    def create_zip_download(filtered_anomaly_data, featureTextOnEachPage, merged_data, pdf_bytes):
+    def create_zip_download(filtered_anomaly_data, featureTextOnEachPage, merged_data, pdf_annotator):
         """Create a ZIP file containing all 4 files"""
-        
         zip_buffer = io.BytesIO()
-        
+    
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-            
             # Convert DataFrames to Excel bytes and add to ZIP
             excel_files = [
                 (filtered_anomaly_data, "AnomalyData.xlsx"),
@@ -192,8 +190,24 @@ def execute_markup(input_file,
                 df.to_excel(excel_buffer, index=False)
                 zip_file.writestr(filename, excel_buffer.getvalue())
             
-            # Add PDF to ZIP
-            zip_file.writestr("AnomalyMarked.pdf", pdf_bytes)
+            # Get PDF bytes from PDFAnnotator object and add to ZIP
+            # Method 1: If PDFAnnotator has a save() method that returns bytes
+            try:
+                pdf_bytes = pdf_annotator.save()  # or pdf_annotator.output()
+                zip_file.writestr("AnomalyMarked.pdf", pdf_bytes)
+            except AttributeError:
+                # Method 2: If PDFAnnotator has a different method to get bytes
+                try:
+                    pdf_buffer = io.BytesIO()
+                    pdf_annotator.save(pdf_buffer)  # Save to buffer
+                    zip_file.writestr("AnomalyMarked.pdf", pdf_buffer.getvalue())
+                except:
+                    # Method 3: If you need to save to a temporary file first
+                    import tempfile
+                    with tempfile.NamedTemporaryFile() as tmp_file:
+                        pdf_annotator.save(tmp_file.name)
+                        tmp_file.seek(0)
+                        zip_file.writestr("AnomalyMarked.pdf", tmp_file.read())
         
         return zip_buffer.getvalue()
     st.success(f"🎉 All processing completed in {execution_time:.2f} seconds!")
