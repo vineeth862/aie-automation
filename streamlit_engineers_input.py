@@ -12,17 +12,17 @@ st.set_page_config(
 )
 
 # Debug information
-st.sidebar.write("Debug Info:")
-st.sidebar.write(f"Python version: {sys.version}")
-st.sidebar.write(f"Streamlit version: {st.__version__}")
-st.sidebar.write(f"Current directory: {os.getcwd()}")
+# st.sidebar.write("Debug Info:")
+# st.sidebar.write(f"Python version: {sys.version}")
+# st.sidebar.write(f"Streamlit version: {st.__version__}")
+# st.sidebar.write(f"Current directory: {os.getcwd()}")
 
 # Import your main function
 try:
     from mainApp import execute_markup
-    st.sidebar.success("✅ mainApp imported successfully")
+    # st.sidebar.success("✅ mainApp imported successfully")
 except ImportError as e:
-    st.sidebar.error(f"❌ Import error: {e}")
+    # st.sidebar.error(f"❌ Import error: {e}")
     st.error("Could not import 'execute_markup' from 'mainApp'. Please ensure mainApp.py is in the same directory.")
     st.write("Files in current directory:")
     for file in os.listdir("."):
@@ -30,7 +30,7 @@ except ImportError as e:
     st.stop()
 except RuntimeError as e:
     if "torch::class_" in str(e):
-        st.sidebar.error("❌ PyTorch compatibility error detected")
+        # st.sidebar.error("❌ PyTorch compatibility error detected")
         st.error("🔧 PyTorch Compatibility Issue Detected")
         st.markdown("""
         **This error is typically caused by PyTorch version incompatibility. Try these solutions:**
@@ -63,11 +63,11 @@ except RuntimeError as e:
             st.code(str(e))
         st.stop()
     else:
-        st.sidebar.error(f"❌ Runtime error: {e}")
+        # st.sidebar.error(f"❌ Runtime error: {e}")
         st.error(f"Runtime error occurred: {e}")
         st.stop()
 except Exception as e:
-    st.sidebar.error(f"❌ Unexpected error: {e}")
+    # st.sidebar.error(f"❌ Unexpected error: {e}")
     st.error(f"Unexpected error loading mainApp: {e}")
     with st.expander("Show error details"):
         st.code(traceback.format_exc())
@@ -98,11 +98,7 @@ def main():
         )
         
         # Output directory input
-        output_path = st.text_input(
-            "Output Directory Path",
-            value="./output",
-            help="Directory where output files will be saved"
-        )
+        output_path = "./output"
         
         # Handle uploaded files
         input_file = None
@@ -181,9 +177,9 @@ def main():
         pdf_exists = uploaded_pdf is not None
         st.write(f"PDF file: {'✅ Ready' if pdf_exists else '❌ Not uploaded'}")
     
-    with col5:
-        output_dir_ready = bool(output_path.strip())
-        st.write(f"Output path: {'✅ Set' if output_dir_ready else '❌ Not set'}")
+    # with col5:
+    #     output_dir_ready = bool(output_path.strip())
+    #     st.write(f"Output path: {'✅ Set' if output_dir_ready else '❌ Not set'}")
     
     # Execute button
     st.markdown("---")
@@ -196,20 +192,11 @@ def main():
         if not output_path.strip():
             st.error("Please specify an output directory path.")
             return
-        
-        # Create output directory if it doesn't exist
-        try:
-            os.makedirs(output_path, exist_ok=True)
-            st.success(f"Output directory ready: {output_path}")
-        except Exception as e:
-            st.error(f"Could not create output directory: {e}")
-            return
-        
         # Execute the function
         with st.spinner("Executing markup analysis... This may take a few minutes."):
             try:
                 # Call the main function
-                execute_markup(
+                result = execute_markup(
                     input_file,
                     pdf_path,
                     output_path,
@@ -222,21 +209,6 @@ def main():
                 )
                 
                 st.success("✅ Markup analysis completed successfully!")
-                st.balloons()
-                
-                # Show output directory
-                st.info(f"📂 Output files saved to: {output_path}")
-                
-                # Optional: List output files if directory exists
-                if os.path.exists(output_path):
-                    output_files = [f for f in os.listdir(output_path) if os.path.isfile(os.path.join(output_path, f))]
-                    if output_files:
-                        st.subheader("Generated Files:")
-                        for file in output_files[-5:]:  # Show last 5 files
-                            st.text(f"📄 {file}")
-                        if len(output_files) > 5:
-                            st.text(f"... and {len(output_files) - 5} more files")
-                
                 # Clean up temporary files
                 try:
                     if input_file and os.path.exists(input_file):
