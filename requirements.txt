@@ -6,7 +6,7 @@ opencv-python-headless  # Use this instead of opencv-python
 numpy
 pandas
 Pillow
-pymupdf
+PyMuPDF==1.25.3
 langchain==0.3.18
 langchain-anthropic==0.3.10
 langchain-community==0.3.17
