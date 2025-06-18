@@ -235,18 +235,18 @@ def main():
                 except:
                     pass
     
-    # Information section
-    st.markdown("---")
-    st.subheader("ℹ️ Instructions")
-    st.markdown("""
-    ### 📋 How to Use:
-    1. **Upload Files**: Drag & drop or browse to upload your Excel and PDF files
-    2. **Set Output Path**: Specify where results should be saved (e.g., `./output` or `C:/output`)
-    3. **Configure Parameters**: Adjust anomaly threshold and column names if needed
-    4. **Execute**: Click the button to run the analysis
+    # # Information section
+    # st.markdown("---")
+    # st.subheader("ℹ️ Instructions")
+    # st.markdown("""
+    # ### 📋 How to Use:
+    # 1. **Upload Files**: Drag & drop or browse to upload your Excel and PDF files
+    # 2. **Set Output Path**: Specify where results should be saved (e.g., `./output` or `C:/output`)
+    # 3. **Configure Parameters**: Adjust anomaly threshold and column names if needed
+    # 4. **Execute**: Click the button to run the analysis
     
-    **Note**: Make sure the `mainApp.py` file is in the same directory as this app.
-    """)
+    # **Note**: Make sure the `mainApp.py` file is in the same directory as this app.
+    # """)
 
 if __name__ == "__main__":
     main()
