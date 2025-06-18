@@ -207,8 +207,11 @@ def main():
                     anomaly_LTCR,
                     anomaly_STCR
                 )
-                
-                st.success("✅ Markup analysis completed successfully!")
+                if result['status']!='1':
+                    st.success("Markup Failed!")
+                    st.write(f"Error encountered:{result}")
+                else:
+                    st.success("✅ Markup analysis completed successfully!")
                 # Clean up temporary files
                 try:
                     if input_file and os.path.exists(input_file):
