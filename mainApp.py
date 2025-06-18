@@ -215,7 +215,7 @@ def execute_markup(input_file,
         filtered_anomaly_data=filtered_anomaly_data,
         featureTextOnEachPage=featureTextOnEachPage, 
         merged_data=merged_data,
-        pdf_bytes=annotator
+        pdf_annotator=annotator
     )
     
     # Single download button in center
