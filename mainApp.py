@@ -193,19 +193,20 @@ def execute_markup(input_file,
             # Get PDF bytes from PDFAnnotator object and add to ZIP
             # Method 1: If PDFAnnotator has a save() method that returns bytes
             try:
-                pdf_bytes = pdf_annotator.save()  # or pdf_annotator.output()
+                # PyMuPDF (fitz) document - use tobytes() or write() method
+                pdf_bytes = pdf_annotator.doc.tobytes()
                 zip_file.writestr("AnomalyMarked.pdf", pdf_bytes)
             except AttributeError:
-                # Method 2: If PDFAnnotator has a different method to get bytes
+                # Alternative method for PyMuPDF - write to buffer
                 try:
                     pdf_buffer = io.BytesIO()
-                    pdf_annotator.save(pdf_buffer)  # Save to buffer
+                    pdf_annotator.doc.save(pdf_buffer)
                     zip_file.writestr("AnomalyMarked.pdf", pdf_buffer.getvalue())
                 except:
-                    # Method 3: If you need to save to a temporary file first
+                    # Fallback - save to temporary file then read
                     import tempfile
-                    with tempfile.NamedTemporaryFile() as tmp_file:
-                        pdf_annotator.save(tmp_file.name)
+                    with tempfile.NamedTemporaryFile(suffix='.pdf') as tmp_file:
+                        pdf_annotator.doc.save(tmp_file.name)
                         tmp_file.seek(0)
                         zip_file.writestr("AnomalyMarked.pdf", tmp_file.read())
         
